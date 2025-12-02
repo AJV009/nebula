@@ -6,24 +6,12 @@ export default {
   component: Logo,
 };
 
-const Decorator = ({ children, dark = false }) => (
-  <Section darkVariant={dark} content={children} />
-);
+const Decorator = ({ children }) => <Section content={children} />;
 
 export const Default = {
   decorators: [
     (Story) => (
       <Decorator>
-        <Story />
-      </Decorator>
-    ),
-  ],
-};
-
-export const Dark = {
-  decorators: [
-    (Story) => (
-      <Decorator dark>
         <Story />
       </Decorator>
     ),

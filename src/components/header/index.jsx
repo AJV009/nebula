@@ -1,13 +1,9 @@
 import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 
-const Header = ({ branding, navigation, darkVariant, backgroundColor }) => {
+const Header = ({ branding, navigation, backgroundColor }) => {
   const headerVariants = cva("", {
     variants: {
-      colorScheme: {
-        light: "",
-        dark: "dark",
-      },
       backgroundColor: {
         base: "bg-base",
         mantle: "bg-mantle",
@@ -15,14 +11,12 @@ const Header = ({ branding, navigation, darkVariant, backgroundColor }) => {
       },
     },
     defaultVariants: {
-      colorScheme: "light",
       backgroundColor: "base",
     },
   });
   return (
     <header
       className={headerVariants({
-        colorScheme: darkVariant ? "dark" : "light",
         backgroundColor,
       })}
     >

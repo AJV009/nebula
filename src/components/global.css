@@ -21,19 +21,10 @@
  * @see https://catppuccin.com
  * @see https://github.com/catppuccin/catppuccin/blob/main/docs/style-guide.md
  *
- * Defining variables for the colors, which we can override for dark mode, and
- * using them as Tailwind CSS theme variables for colors, we can, e.g., simply set
- * `bg-base` on an element, and the background color will adopt based on the
- * presence of the `dark` class. (No need to add separate classes like
- * `dark:bg-base-dark` or similar.)
- * (This is also the technique used by shadcn/ui with the CSS variables theming
- * approach: https://ui.shadcn.com/docs/theming.)
+ * Using "Latte" flavor for light colors.
+ * @see https://catppuccin.com/palette/#flavor-latte
  */
 :root {
-  /*
-   * "Latte" flavor for default, light colors.
-   * @see https://catppuccin.com/palette/#flavor-latte
-   */
   --catpuccin-base: hsl(220deg, 23%, 95%);
   --catpuccin-mantle: hsl(220deg, 22%, 92%);
   --catpuccin-crust: hsl(220deg, 21%, 89%);
@@ -59,44 +50,6 @@
   --catpuccin-blue: hsl(220deg, 91%, 54%);
   --catpuccin-lavender: hsl(231deg, 97%, 72%);
 }
-
-.dark {
-  /*
-   * "Frappé" flavor for dark colors.
-   * @see https://catppuccin.com/palette/#flavor-frappe
-   */
-  --catpuccin-base: hsl(229deg, 19%, 23%);
-  --catpuccin-mantle: hsl(231deg, 19%, 20%);
-  --catpuccin-crust: hsl(229deg, 20%, 17%);
-  --catpuccin-surface-0: hsl(230deg, 16%, 30%);
-  --catpuccin-surface-1: hsl(227deg, 15%, 37%);
-  --catpuccin-surface-2: hsl(228deg, 13%, 44%);
-  --catpuccin-text: hsl(227deg, 70%, 87%);
-  --catpuccin-subtext-0: hsl(228deg, 29%, 73%);
-  --catpuccin-subtext-1: hsl(227deg, 44%, 80%);
-
-  --catpuccin-rosewater: hsl(10deg, 57%, 88%);
-  --catpuccin-flamingo: hsl(0deg, 59%, 84%);
-  --catpuccin-pink: hsl(316deg, 73%, 84%);
-  --catpuccin-mauve: hsl(277deg, 59%, 76%);
-  --catpuccin-red: hsl(359deg, 68%, 71%);
-  --catpuccin-maroon: hsl(358deg, 66%, 76%);
-  --catpuccin-peach: hsl(20deg, 79%, 70%);
-  --catpuccin-yellow: hsl(40deg, 62%, 73%);
-  --catpuccin-green: hsl(96deg, 44%, 68%);
-  --catpuccin-teal: hsl(172deg, 39%, 65%);
-  --catpuccin-sky: hsl(189deg, 48%, 73%);
-  --catpuccin-sapphire: hsl(199deg, 55%, 69%);
-  --catpuccin-blue: hsl(222deg, 74%, 74%);
-  --catpuccin-lavender: hsl(239deg, 66%, 84%);
-}
-
-/* 
- * Allow toggling dark mode in Tailwind CSS manually by adding the `dark` class.
- * This allows adding props to components that control dark mode.
- * @see https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually
- */
-@custom-variant dark (&:where(.dark, .dark *));
 
 /* 
  * Tailwind CSS theme variables.

@@ -59,7 +59,6 @@ const ExampleHomepage = () => {
         }
       />
       <Section
-        darkVariant={true}
         content={
           <>
             <Heading {...exampleHeadingArgs[2]} />

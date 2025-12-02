@@ -31,17 +31,3 @@ export const Default = {
     backgroundColor: "base",
   },
 };
-
-export const Dark = {
-  args: {
-    content: (
-      <>
-        <Heading {...exampleHeadingArgs[0]} />
-        <Paragraph {...exampleParagraphArgs[0]} />
-      </>
-    ),
-    ...exampleSectionArgs[0],
-    darkVariant: true,
-    backgroundColor: "base",
-  },
-};

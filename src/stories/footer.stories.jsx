@@ -23,12 +23,4 @@ export const Default = {
   },
 };
 
-export const Dark = {
-  args: {
-    branding: <Logo />,
-    ...exampleFooterArgs[0],
-    darkVariant: true,
-  },
-};
-
 export const Empty = {};

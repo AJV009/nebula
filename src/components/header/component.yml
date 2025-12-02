@@ -5,11 +5,6 @@ required:
   - backgroundColor
 props:
   properties:
-    darkVariant:
-      title: Dark variant
-      type: boolean
-      examples:
-        - true
     backgroundColor:
       title: Background color
       type: string

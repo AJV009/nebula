@@ -5,15 +5,10 @@ import { cva } from "class-variance-authority";
 const Footer = ({
   branding,
   copyrightNotice,
-  darkVariant,
   backgroundColor,
 }) => {
   const footerVariants = cva("", {
     variants: {
-      colorScheme: {
-        light: "",
-        dark: "dark",
-      },
       backgroundColor: {
         base: "bg-base",
         mantle: "bg-mantle",
@@ -21,14 +16,12 @@ const Footer = ({
       },
     },
     defaultVariants: {
-      colorScheme: "light",
       backgroundColor: "base",
     },
   });
   return (
     <footer
       className={footerVariants({
-        colorScheme: darkVariant ? "dark" : "light",
         backgroundColor,
       })}
     >

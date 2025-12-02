@@ -18,10 +18,3 @@ export default {
 export const Default = {
   args: exampleHeroArgs[0],
 };
-
-export const Dark = {
-  args: {
-    ...exampleHeroArgs[0],
-    darkVariant: true,
-  },
-};

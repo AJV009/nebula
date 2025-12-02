@@ -45,11 +45,6 @@ props:
           alt: Woman playing the violin
           width: 1770
           height: 1180
-    darkVariant:
-      title: Dark variant
-      type: boolean
-      examples:
-        - true
     backgroundColor:
       title: Background color
       type: string

@@ -11,9 +11,7 @@ export default {
   component: Grid,
 };
 
-const Decorator = ({ children, dark = false }) => (
-  <Section darkVariant={dark} content={children} />
-);
+const Decorator = ({ children }) => <Section content={children} />;
 
 export const Default = {
   args: {
@@ -28,25 +26,6 @@ export const Default = {
   decorators: [
     (Story) => (
       <Decorator>
-        <Story />
-      </Decorator>
-    ),
-  ],
-};
-
-export const Dark = {
-  args: {
-    content: (
-      <>
-        {exampleCardArgs.map((cardProps, index) => (
-          <Card key={index} {...cardProps} />
-        ))}
-      </>
-    ),
-  },
-  decorators: [
-    (Story) => (
-      <Decorator dark>
         <Story />
       </Decorator>
     ),

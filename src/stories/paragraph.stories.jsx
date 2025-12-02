@@ -10,26 +10,13 @@ export default {
   component: Paragraph,
 };
 
-const Decorator = ({ children, dark = false }) => (
-  <Section darkVariant={dark} content={children} />
-);
+const Decorator = ({ children }) => <Section content={children} />;
 
 export const Default = {
   args: exampleParagraphArgs[0],
   decorators: [
     (Story) => (
       <Decorator>
-        <Story />
-      </Decorator>
-    ),
-  ],
-};
-
-export const Dark = {
-  args: exampleParagraphArgs[0],
-  decorators: [
-    (Story) => (
-      <Decorator dark>
         <Story />
       </Decorator>
     ),

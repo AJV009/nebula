@@ -13,11 +13,6 @@ props:
       x-formatting-context: block
       examples:
         - "&copy; 2025 Humanify Inc. All rights reserved."
-    darkVariant:
-      title: Dark variant
-      type: boolean
-      examples:
-        - true
     backgroundColor:
       title: Background color
       type: string

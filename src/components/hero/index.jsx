@@ -8,15 +8,10 @@ const Hero = ({
   buttonLabel,
   buttonLink,
   image,
-  darkVariant,
   backgroundColor,
 }) => {
   const heroVariants = cva("", {
     variants: {
-      colorScheme: {
-        light: "",
-        dark: "dark",
-      },
       backgroundColor: {
         base: "bg-base",
         mantle: "bg-mantle",
@@ -24,14 +19,12 @@ const Hero = ({
       },
     },
     defaultVariants: {
-      colorScheme: "light",
       backgroundColor: "base",
     },
   });
   return (
     <section
       className={heroVariants({
-        colorScheme: darkVariant ? "dark" : "light",
         backgroundColor,
       })}
     >
@@ -66,7 +59,7 @@ const Hero = ({
             src={image.src}
             width={image.width}
             height={image.height}
-            className="h-full w-full object-cover object-right shadow-lg sm:rounded-l-4xl xl:rounded-r-xl dark:border dark:border-surface-0 dark:shadow-none"
+            className="h-full w-full object-cover object-right shadow-lg sm:rounded-l-4xl xl:rounded-r-xl"
           />
         </div>
       </div>

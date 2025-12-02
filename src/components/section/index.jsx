@@ -1,13 +1,9 @@
 import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 
-const Section = ({ content, darkVariant, backgroundColor = "base" }) => {
+const Section = ({ content, backgroundColor = "base" }) => {
   const sectionVariants = cva("", {
     variants: {
-      colorScheme: {
-        light: "",
-        dark: "dark",
-      },
       backgroundColor: {
         base: "bg-base",
         mantle: "bg-mantle",
@@ -15,7 +11,6 @@ const Section = ({ content, darkVariant, backgroundColor = "base" }) => {
       },
     },
     defaultVariants: {
-      colorScheme: "light",
       backgroundColor: "base",
     },
   });
@@ -24,7 +19,6 @@ const Section = ({ content, darkVariant, backgroundColor = "base" }) => {
     <section
       className={cn(
         sectionVariants({
-          colorScheme: darkVariant ? "dark" : "light",
           backgroundColor,
         }),
       )}

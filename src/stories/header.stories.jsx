@@ -20,12 +20,4 @@ export const Default = {
   },
 };
 
-export const Dark = {
-  args: {
-    branding: <Logo />,
-    navigation: <Navigation />,
-    darkVariant: true,
-  },
-};
-
 export const Empty = {};
