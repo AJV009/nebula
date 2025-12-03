@@ -1,6 +1,50 @@
 # Drupal Canvas Code Components rules and best practices
 
-# `component.yml` files
+# Project structure
+
+This project uses a two-folder structure to separate example code from working
+code:
+
+```
+src/
+├── components/     # Your working components (Storybook reads from here)
+│   └── global.css  # Base styles imported by Storybook
+├── stories/        # Your working stories (Storybook reads from here)
+└── lib/            # Library utilities and mocks
+
+examples/
+├── components/     # Example component implementations (for reference)
+└── stories/        # Example stories (for reference)
+```
+
+# Creating new components
+
+**Always start from an example.** When asked to create a new component:
+
+1. Browse `examples/components/` to find a similar component that can serve as a
+   starting point (e.g., use `blockquote` as a base for an "alert" component, or
+   `button` for any interactive element)
+2. Copy the example component folder to `src/components/<new_name>/`
+3. Copy the corresponding story from `examples/stories/` to `src/stories/`
+4. Modify the copied files to implement the new component
+
+This approach ensures consistent patterns for `component.yml` structure, JSX
+conventions, and Storybook story format across all components.
+
+**Example:** To create a new "Alert" component based on the Blockquote example:
+
+```bash
+cp -r examples/components/blockquote src/components/alert
+cp examples/stories/blockquote.stories.jsx src/stories/alert.stories.jsx
+```
+
+Then modify the copied files to implement the Alert component.
+
+Components use the `@/components` import alias, which points to
+`src/components`. When you copy and modify examples, the imports will work
+automatically.
+
+# Component metadata files (`component.yml`)
 
 Each component requires a `component.yml` file that defines its metadata, props,
 and slots.
