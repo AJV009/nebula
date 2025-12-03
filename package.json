@@ -55,6 +55,7 @@
     "*.{js,jsx,yml,yaml}": "eslint --fix"
   },
   "scripts": {
+    "canvas": "canvas",
     "dev": "storybook dev -p 6006 --no-open",
     "storybook": "npm run dev",
     "build": "storybook build",

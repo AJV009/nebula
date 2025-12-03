@@ -240,10 +240,11 @@ it as a proper component in `src/components/` first.
 # Validating changes
 
 After creating or modifying components, always validate your code by running the
-`code:fix` script:
+`code:fix` script. Make sure to use the right package manager. For example, if
+using npm, run the following command:
 
 ```bash
-code:fix
+npm run code:fix
 ```
 
 This command runs Prettier and ESLint with auto-fix enabled, ensuring consistent
@@ -256,10 +257,11 @@ manually in the code and re-run the command until it passes without errors.
 # Uploading components
 
 When component work is complete and validated, ask the user if they would like
-to upload the modified components to Canvas. Use the following command format:
+to upload the modified components to Canvas. Make sure to use the right package
+manager. For example, if using npm, run the following command:
 
 ```bash
-canvas upload -c component1,component2,component3
+npm run canvas upload -c component1,component2,component3
 ```
 
 Replace `component1,component2,component3` with the actual component names that
