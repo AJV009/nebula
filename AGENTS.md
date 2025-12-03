@@ -55,6 +55,56 @@ Components use the `@/components` import alias, which points to
 `src/components`. When you copy and modify examples, the imports will work
 automatically.
 
+# Requirements for creating or modifying components
+
+**Always study `examples/` first and follow their patterns.**
+
+## Technology stack
+
+- React 19;
+- Tailwind CSS 4.1+;
+- class-variance-authority (CVA) for component variants;
+- `clsx` and `tailwind-merge` via the `cn()` utility;
+- `FormattedText` component from `@/lib/FormattedText` for rendering HTML
+  content.
+
+## Component patterns
+
+- Use CVA (`cva()`) to define variant styles for components.
+- Use the `cn()` utility from `@/lib/utils` to merge class names.
+- Always export components as default exports.
+- Accept a `className` prop for style customization.
+- Use the `@/components` import alias when importing other components.
+- Only use dependencies listed in the technology stack; do not add third-party
+  imports or create new library utilities.
+- Place each component in its own folder under `src/components/` with an
+  `index.jsx` and `component.yml` file. Do not create nested folder structures.
+
+## Styling conventions
+
+- Use Tailwind's theme colors (`primary-*`, `gray-*`) defined in `global.css`.
+- Avoid hardcoded color values; use theme tokens instead.
+- Follow the existing focus, hover, and active state patterns from examples.
+
+## Storybook stories
+
+- Use Storybook CSF3 format (object-based stories).
+- Include `argTypes` for props with predefined options (like enums).
+- Create multiple story exports to showcase different variants.
+- Use decorators when components need specific backgrounds (e.g., dark
+  backgrounds for light-colored components).
+
+### Page stories
+
+Page stories in `src/stories/` showcase how components work together in
+realistic layouts.
+
+- When creating new components, consider adding them to existing page stories if
+  they fit naturally, or create new page stories to demonstrate the component in
+  context.
+- When modifying existing components, review page stories in `src/stories/` to
+  ensure changes work well in composed layouts and update them if needed.
+
 # Validating changes
 
 After creating or modifying components, always validate your code by running the
