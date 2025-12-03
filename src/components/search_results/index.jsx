@@ -20,7 +20,10 @@ function getOffsetFromLink(link) {
 }
 
 export default function List() {
-  const [links, setLinks] = useState({});
+  // Pagination can't be cleanly done currently due to how Canvas sets up
+  // @drupal-api-client/json-api-client with Jsona as the serializer by default.
+  // @see https://www.drupal.org/project/api_client/issues/3426518
+  const links = {};
   const [pageOffset, setPageOffset] = useState(0);
 
   const { data, error, isLoading } = useSWR(
