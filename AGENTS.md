@@ -39,6 +39,11 @@ Use the detected package manager for all commands in these instructions.
 3. Copy the corresponding story from `examples/stories/` to `src/stories/`
 4. Modify the copied files to implement the new component
 
+**CRITICAL: Every component MUST have its own individual story file.** When
+copying from examples, always copy both the component folder AND its
+corresponding story file. The story file naming convention is
+`<component-name>.stories.jsx` (using kebab-case with hyphens).
+
 This approach ensures consistent patterns for `component.yml` structure, JSX
 conventions, and Storybook story format across all components.
 
@@ -54,6 +59,35 @@ Then modify the copied files to implement the Alert component.
 Components use the `@/components` import alias, which points to
 `src/components`. When you copy and modify examples, the imports will work
 automatically.
+
+## Required component folder structure
+
+**CRITICAL:** Every component folder in `src/components/` MUST contain exactly
+two files:
+
+```
+src/components/<component_name>/
+├── index.jsx      # React component source code (REQUIRED)
+└── component.yml  # Component metadata and props (REQUIRED)
+```
+
+**Never create a component folder without both files.** The `index.jsx` contains
+the actual React component implementation. The `component.yml` defines the
+component's metadata, props, and slots for Drupal Canvas.
+
+After creating components, verify the folder structure:
+
+```bash
+# List all component folders and their contents
+ls -la src/components/*/
+
+# Verify each new component has both required files
+ls src/components/<component_name>/index.jsx
+ls src/components/<component_name>/component.yml
+```
+
+If a component folder is missing either file, the component is incomplete and
+will not work. Both `index.jsx` and `component.yml` are required.
 
 # Requirements for creating or modifying components
 
@@ -88,22 +122,120 @@ automatically.
 
 ## Storybook stories
 
+**CRITICAL: Every component MUST have an individual story file.**
+
+Each component in `src/components/` requires a corresponding story file in
+`src/stories/`. The story file:
+
+- Must be named `<component-name>.stories.jsx` (kebab-case with hyphens)
+- Must import the component from `@/components/<component_name>`
+- Must showcase the component's props and variants
+
+**Example structure:**
+
+```
+src/components/my_card/
+├── index.jsx
+└── component.yml
+
+src/stories/my-card.stories.jsx  # Required story file for my_card component
+```
+
+**Story file requirements:**
+
 - Use Storybook CSF3 format (object-based stories).
 - Include `argTypes` for props with predefined options (like enums).
 - Create multiple story exports to showcase different variants.
 - Use decorators when components need specific backgrounds (e.g., dark
   backgrounds for light-colored components).
 
+After creating components, verify story files exist:
+
+```bash
+# List all story files
+ls src/stories/*.stories.jsx
+
+# Verify a specific component has its story
+ls src/stories/<component-name>.stories.jsx
+```
+
 ### Page stories
 
-Page stories in `src/stories/` showcase how components work together in
-realistic layouts.
+Page stories showcase how components work together in realistic layouts.
+
+**Page story location and naming:**
+
+- Page stories MUST be placed in `src/stories/example-pages/`
+- Page story files should be named `<page-name>.stories.jsx`
+- The Storybook title MUST use this format: `title: "Example pages/[Title]"`
+
+Example:
+
+```jsx
+// src/stories/example-pages/saas-home.stories.jsx
+export default {
+  title: "Example pages/SaaS Home",
+  component: SaaSHomePage,
+  parameters: {
+    layout: "fullscreen",
+  },
+};
+```
 
 - When creating new components, consider adding them to existing page stories if
   they fit naturally, or create new page stories to demonstrate the component in
   context.
-- When modifying existing components, review page stories in `src/stories/` to
-  ensure changes work well in composed layouts and update them if needed.
+- When modifying existing components, review page stories in
+  `src/stories/example-pages/` to ensure changes work well in composed layouts
+  and update them if needed.
+
+**CRITICAL: Page stories must only IMPORT and COMPOSE components.**
+
+Page stories should:
+
+- Import components from `@/components/<component_name>`
+- Pass props and compose components together
+- Define sample data (strings, objects, arrays) for component props
+
+Page stories must NOT:
+
+- Define reusable React components inline (these belong in `src/components/`)
+- Contain component logic that should be extracted to a proper component
+- Duplicate component code that already exists
+
+**Wrong - defining components inline in a story:**
+
+```jsx
+// ❌ BAD: This component should be in src/components/logo/index.jsx
+const Logo = ({ color }) => (
+  <div className="flex items-center">
+    <svg>...</svg>
+    <span style={{ color }}>Brand Name</span>
+  </div>
+);
+
+const Page = () => (
+  <div>
+    <Logo color="#000" />
+  </div>
+);
+```
+
+**Correct - importing components:**
+
+```jsx
+// ✅ GOOD: Import the component from src/components/
+import Logo from "@/components/logo";
+
+const Page = () => (
+  <div>
+    <Logo color="#000" />
+  </div>
+);
+```
+
+If you find yourself defining a reusable UI element in a story, stop and create
+it as a proper component in `src/components/` first.
 
 # Validating changes
 
