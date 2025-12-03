@@ -51,8 +51,8 @@
     "vite": "^7.2.2"
   },
   "lint-staged": {
-    "*.{js,jsx,json,html,md,mdx,yml}": "prettier --write",
-    "*.{js,jsx}": "eslint --fix"
+    "*.{css,js,jsx,json,html,md,mdx,yml}": "prettier --write",
+    "*.{js,jsx,yml,yaml}": "eslint --fix"
   },
   "scripts": {
     "dev": "storybook dev -p 6006 --no-open",
