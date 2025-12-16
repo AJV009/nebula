@@ -27,6 +27,7 @@
     "@drupal-canvas/eslint-config": "^0.0.1",
     "@eslint/js": "^9.39.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@intellectronica/ruler": "^0.3.17",
     "@storybook/addon-docs": "^10.0.8",
     "@storybook/react-vite": "^10.0.8",
     "@tailwindcss/vite": "^4.1.17",
@@ -67,6 +68,7 @@
     "code:fix:eslint": "npm run s:eslint -- --fix",
     "s:prettier": "prettier \"**/*.{css,js,jsx,json,html,md,mdx,yml}\"",
     "s:eslint": "eslint \"**/*.{js,jsx,yml,yaml}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ruler": "ruler"
   }
 }

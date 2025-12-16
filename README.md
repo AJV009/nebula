@@ -15,6 +15,20 @@ Instead of cloning this repository, create a new project interactively:
 npx @drupal-canvas/create@latest
 ```
 
+## AI-assisted development workflows
+
+Different AI tools have different configuration files. To apply the provided AI
+instructions to your AI agent use:
+
+```
+npx ruler apply --agents=<agent1,agent2,...>
+```
+
+For example, `npx ruler apply --agents=cursor` or
+`npx ruler apply --agents=claude`.  
+For complete list of supported agents, see:
+<https://github.com/intellectronica/ruler#supported-ai-agents>.
+
 ## Features
 
 - [`@drupal-canvas/create`](https://www.npmjs.com/package/@drupal-canvas/cli)
@@ -47,15 +61,16 @@ npx @drupal-canvas/create@latest
 
 ## Commands
 
-| Command                          | Description                                                                  |
-| -------------------------------- | ---------------------------------------------------------------------------- |
-| `npx canvas [command] [options]` | Runs Drupal Canvas CLI commands <br> (`npx canvas` lists available commands) |
-| `npm run dev`                    | Starts Storybook's development server                                        |
-| `npm run storybook`              | Alias for `dev` command                                                      |
-| `npm run build-storybook`        | Creates a static Storybook build                                             |
-| `npm run code:check`             | Runs all code checks                                                         |
-| `npm run code:check:prettier`    | Checks code formatting with Prettier                                         |
-| `npm run code:check:eslint`      | Checks code with ESLint                                                      |
-| `npm run code:fix`               | Runs all code fixes                                                          |
-| `npm run code:fix:prettier`      | Fixes code formatting with Prettier                                          |
-| `npm run code:fix:eslint`        | Fixes code with ESLint                                                       |
+| Command                          | Description                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| `npx ruler [command] [options]`  | Runs [Ruler](https://www.npmjs.com/package/@intellectronica/ruler) CLI commands |
+| `npx canvas [command] [options]` | Runs Drupal Canvas CLI commands <br> (`npx canvas` lists available commands)    |
+| `npm run dev`                    | Starts Storybook's development server                                           |
+| `npm run storybook`              | Alias for `dev` command                                                         |
+| `npm run build-storybook`        | Creates a static Storybook build                                                |
+| `npm run code:check`             | Runs all code checks                                                            |
+| `npm run code:check:prettier`    | Checks code formatting with Prettier                                            |
+| `npm run code:check:eslint`      | Checks code with ESLint                                                         |
+| `npm run code:fix`               | Runs all code fixes                                                             |
+| `npm run code:fix:prettier`      | Fixes code formatting with Prettier                                             |
+| `npm run code:fix:eslint`        | Fixes code with ESLint                                                          |
