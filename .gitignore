@@ -15,6 +15,9 @@ storybook-static
 .env
 *.local
 
+# Scraped content (from scripts/scrape-page.js)
+scraped/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
