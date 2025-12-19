@@ -29,6 +29,119 @@
 - Avoid hardcoded color values; use theme tokens instead.
 - Follow the existing focus, hover, and active state patterns from examples.
 
+## Tailwind 4 theme variables
+
+This project uses Tailwind CSS 4's `@theme` directive to define design tokens in
+`global.css`. Variables defined inside `@theme { }` automatically become
+available as Tailwind utility classes.
+
+**Always check `global.css` for available design tokens.** The `@theme` block is
+the source of truth for colors, fonts, breakpoints, and other design tokens in
+this project.
+
+### How theme variables map to utility classes
+
+When you define a CSS variable in `@theme`, Tailwind 4 automatically generates
+corresponding utility classes based on the variable's namespace prefix:
+
+| CSS Variable in `@theme`    | Generated Utility Classes                                  |
+| --------------------------- | ---------------------------------------------------------- |
+| `--color-primary-600: #xxx` | `bg-primary-600`, `text-primary-600`, `border-primary-600` |
+| `--color-gray-100: #xxx`    | `bg-gray-100`, `text-gray-100`, `border-gray-100`          |
+| `--font-sans: ...`          | `font-sans`                                                |
+| `--breakpoint-md: 48rem`    | `md:` responsive prefix                                    |
+
+The pattern is: `--{namespace}-{name}` becomes `{utility}-{name}`.
+
+### Examples
+
+Given this definition in `global.css`:
+
+```css
+@theme {
+  --color-primary-600: #1899cb;
+  --color-primary-700: #1487b4;
+}
+```
+
+You can use these colors with any color-accepting utility:
+
+```jsx
+// ✅ GOOD: Using theme tokens via utility classes
+<button className="bg-primary-600 hover:bg-primary-700 text-white">
+  Click me
+</button>
+
+<div className="border border-primary-600">
+  Bordered content
+</div>
+
+<span className="text-primary-600">
+  Colored text
+</span>
+```
+
+```jsx
+// ❌ AVOID: Hardcoding hex values when theme tokens exist
+<button className="bg-[#1899cb] text-white hover:bg-[#1487b4]">Click me</button>
+```
+
+Arbitrary values (e.g., `bg-[#xxx]`) are acceptable for rare, one-off cases
+where adding a theme variable would be overkill. However, if a color appears in
+multiple places or represents a brand/design system value, add it to `@theme`
+instead.
+
+### Semantic aliases
+
+Theme variables can reference other variables to create semantic aliases:
+
+```css
+@theme {
+  --color-primary-700: #1487b4;
+  --color-primary-dark: var(--color-primary-700);
+}
+```
+
+Both `bg-primary-700` and `bg-primary-dark` will work. Use semantic aliases when
+they better express intent (e.g., `primary-dark` for a darker brand variant).
+
+### Adding or updating theme variables
+
+When a design requires a color, font, or other value not yet defined in the
+theme, add it to the `@theme` block in `global.css` rather than hardcoding the
+value in a component.
+
+**When to add new theme variables:**
+
+- A design introduces a new brand color or shade
+- You need a semantic alias for an existing value (e.g., `--color-accent`)
+- The design uses a specific spacing, font, or breakpoint value repeatedly
+
+**When to update existing theme variables:**
+
+- The brand colors change (update the hex values)
+- Design tokens need adjustment across the system
+
+**Example - adding a new color:**
+
+```css
+@theme {
+  /* Existing tokens */
+  --color-primary-600: #1899cb;
+
+  /* New token for a success state */
+  --color-success: #22c55e;
+  --color-success-dark: #16a34a;
+}
+```
+
+After adding, you can immediately use `bg-success`, `text-success-dark`, etc.
+
+**Keep the theme organized.** Group related tokens together with comments
+explaining their purpose. Follow the existing naming conventions in `global.css`
+(e.g., numbered shades like `primary-100` through `primary-900`, semantic names
+like `primary-dark`).
+
 ## Color props must use variants, not color codes
 
 **Never create props that allow users to pass color codes** (hex values, RGB,
@@ -150,81 +263,3 @@ ls src/stories/*.stories.jsx
 # Verify a specific component has its story
 ls src/stories/<component-name>.stories.jsx
 ```
-
-### Page stories
-
-Page stories showcase how components work together in realistic layouts.
-
-**Page story location and naming:**
-
-- Page stories MUST be placed in `src/stories/example-pages/`
-- Page story files should be named `<page-name>.stories.jsx`
-- The Storybook title MUST use this format: `title: "Example pages/[Title]"`
-
-Example:
-
-```jsx
-// src/stories/example-pages/saas-home.stories.jsx
-export default {
-  title: "Example pages/SaaS Home",
-  component: SaaSHomePage,
-  parameters: {
-    layout: "fullscreen",
-  },
-};
-```
-
-- When creating new components, consider adding them to existing page stories if
-  they fit naturally, or create new page stories to demonstrate the component in
-  context.
-- When modifying existing components, review page stories in
-  `src/stories/example-pages/` to ensure changes work well in composed layouts
-  and update them if needed.
-
-**CRITICAL: Page stories must only IMPORT and COMPOSE components.**
-
-Page stories should:
-
-- Import components from `@/components/<component_name>`
-- Pass props and compose components together
-- Define sample data (strings, objects, arrays) for component props
-
-Page stories must NOT:
-
-- Define reusable React components inline (these belong in `src/components/`)
-- Contain component logic that should be extracted to a proper component
-- Duplicate component code that already exists
-
-**Wrong - defining components inline in a story:**
-
-```jsx
-// ❌ BAD: This component should be in src/components/logo/index.jsx
-const Logo = ({ color }) => (
-  <div className="flex items-center">
-    <svg>...</svg>
-    <span style={{ color }}>Brand Name</span>
-  </div>
-);
-
-const Page = () => (
-  <div>
-    <Logo color="#000" />
-  </div>
-);
-```
-
-**Correct - importing components:**
-
-```jsx
-// ✅ GOOD: Import the component from src/components/
-import Logo from "@/components/logo";
-
-const Page = () => (
-  <div>
-    <Logo color="#000" />
-  </div>
-);
-```
-
-If you find yourself defining a reusable UI element in a story, stop and create
-it as a proper component in `src/components/` first.
