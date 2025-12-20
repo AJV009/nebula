@@ -30,6 +30,100 @@ Components use the `@/components` import alias, which points to
 `src/components`. When you copy and modify examples, the imports will work
 automatically.
 
+## Component naming conventions
+
+**Use simple, generic names.** Never prefix component names with the project or
+site name. Components should be reusable and their names should describe their
+purpose, not their origin.
+
+When copying and modifying an example component, keep the original name unless
+the component serves a fundamentally different purpose. When creating a new
+component without an example, choose a simple, descriptive name.
+
+```
+# Correct - simple, descriptive names
+footer
+hero
+navigation
+contact_form
+
+# Wrong - prefixed with project/site name
+nebula_footer
+acme_hero
+mysite_navigation
+projectx_contact_form
+```
+
+This ensures components remain portable and their names clearly communicate
+their function rather than their project context.
+
+## Reuse existing components
+
+**Always check `src/components/` before creating new UI elements.** When
+building a component that needs common UI elements (buttons, headings, images,
+etc.), import and use existing components rather than duplicating their
+functionality.
+
+If the component you need doesn't exist in `src/components/` yet, check if it
+exists in `examples/components/`. If so, copy it to `src/components/` first (see
+"Copying existing example components" below), then import and use it.
+
+```jsx
+// ✅ GOOD: Import and use the existing button component
+import Button from "@/components/button";
+
+const NewsletterSignup = ({ onSubmit }) => (
+  <form onSubmit={onSubmit}>
+    <input type="email" placeholder="Enter your email" />
+    <Button variant="primary">Subscribe</Button>
+  </form>
+);
+```
+
+```jsx
+// ❌ BAD: Duplicating button styles instead of reusing the component
+const NewsletterSignup = ({ onSubmit }) => (
+  <form onSubmit={onSubmit}>
+    <input type="email" placeholder="Enter your email" />
+    <button className="rounded bg-primary-600 px-4 py-2 text-white">
+      Subscribe
+    </button>
+  </form>
+);
+```
+
+This ensures visual consistency, reduces duplication, and makes updates easier
+since changes to a shared component automatically apply everywhere it's used.
+
+**Design components for composability.** By default, avoid building layout
+constraints (like `max-width` or centering) into individual components. Layout
+components such as `section` handle width constraints when composing pages, so
+most components should remain flexible and adapt to their container.
+
+Include built-in layout constraints when the component doesn't make sense in any
+other layout context (such as `header` or `footer`), or when the design
+specifically requires it.
+
+```jsx
+// ✅ GOOD: Component adapts to its container width
+const Card = ({ title, children }) => (
+  <div className="rounded-lg border p-4">
+    <h3>{title}</h3>
+    {children}
+  </div>
+);
+```
+
+```jsx
+// ❌ BAD: Component has built-in width constraints (limits composability)
+const Card = ({ title, children }) => (
+  <div className="mx-auto max-w-md rounded-lg border p-4">
+    <h3>{title}</h3>
+    {children}
+  </div>
+);
+```
+
 ## Copying existing example components
 
 When the user asks to add a component and a matching or similar example already

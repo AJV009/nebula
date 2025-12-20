@@ -94,11 +94,28 @@ URL or URI reference for links to internal or external resources.
 type: string
 format: uri-reference
 examples:
-  - https://example.com
+  - /about/contact
 ```
 
 **Note:** The format can be either `uri` (accepts only absolute URLs) or
 `uri-reference` (accepts both absolute and relative URLs).
+
+**IMPORTANT: Use proper path examples for URL props.** Do not use `#` as an
+example value for `uri-reference` props—it can cause validation failures during
+upload. Always use realistic path-like examples:
+
+```yaml
+# ✅ Correct - proper path examples
+examples:
+  - /resources
+  - /about/team
+  - https://example.com/page
+
+# ❌ Wrong - can cause upload failures
+examples:
+  - "#"
+  - ""
+```
 
 ### Image
 
