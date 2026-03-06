@@ -41,6 +41,10 @@ Use this canonical mapping for component/story naming:
 - Create multiple story exports to showcase different variants.
 - Use decorators when components need specific backgrounds (e.g., dark
   backgrounds for light-colored components).
+- Include all props in story `args`, even if empty (e.g., `text: ""`), so that
+  every prop control is visible in the Storybook UI and can be demoed
+  interactively. Only omit a prop if the story intentionally should not expose
+  it.
 
 After creating components, verify story files exist:
 
