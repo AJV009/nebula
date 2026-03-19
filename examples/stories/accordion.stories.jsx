@@ -5,9 +5,6 @@ export default {
   title: "Components/Accordion",
   component: Accordion,
   argTypes: {
-    allowMultiple: {
-      control: "boolean",
-    },
     borderColor: {
       control: "select",
       options: [
@@ -22,6 +19,11 @@ export default {
       control: "select",
       options: ["default", "bordered", "separated"],
     },
+    anchorId: {
+      control: "text",
+      description:
+        "Anchor ID for deep-linking (set on each AccordionItem). Try #faq-support or #faq-multiple in the URL.",
+    },
   },
 };
 
@@ -30,6 +32,7 @@ const ItemContent = ({ text }) => <p className="text-gray-700">{text}</p>;
 const sampleItems = (
   <>
     <AccordionItem
+      anchorId="faq-support"
       content={
         <ItemContent text="Accordion items support slot-based content, including nested components." />
       }
@@ -37,12 +40,14 @@ const sampleItems = (
       title="What does this accordion support?"
     />
     <AccordionItem
+      anchorId="faq-multiple"
       content={
-        <ItemContent text="Set allowMultiple to false on the parent to keep only one item open at a time." />
+        <ItemContent text="Multiple panels can be open at the same time." />
       }
-      title="Can only one item be open?"
+      title="Can multiple items be open?"
     />
     <AccordionItem
+      anchorId="faq-editors"
       content={
         <ItemContent text="Use the Default Open prop in Canvas when you need editorial visibility for an item." />
       }
@@ -53,16 +58,6 @@ const sampleItems = (
 
 export const Default = {
   args: {
-    allowMultiple: true,
-    borderColor: "gray_200",
-    variant: "default",
-    items: sampleItems,
-  },
-};
-
-export const SingleOpen = {
-  args: {
-    allowMultiple: false,
     borderColor: "gray_200",
     variant: "default",
     items: sampleItems,
@@ -71,7 +66,6 @@ export const SingleOpen = {
 
 export const Bordered = {
   args: {
-    allowMultiple: true,
     borderColor: "gray_200",
     variant: "bordered",
     items: sampleItems,
@@ -80,7 +74,6 @@ export const Bordered = {
 
 export const Separated = {
   args: {
-    allowMultiple: true,
     borderColor: "gray_200",
     variant: "separated",
     items: sampleItems,

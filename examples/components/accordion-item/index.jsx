@@ -1,8 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { cn } from "drupal-canvas";
 
-const ACCORDION_OPEN_EVENT = "accordion-item:open";
-
 const PlusIcon = () => (
   <svg
     aria-hidden="true"
@@ -65,118 +63,80 @@ const ChevronIcon = ({ isOpen }) => (
 );
 
 const AccordionItem = ({
+  anchorId,
   className,
   content,
   defaultOpen = false,
   headingElement = "h3",
   title,
 }) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [groupBorderColor, setGroupBorderColor] = useState("gray_200");
-  const [isFirstItem, setIsFirstItem] = useState(true);
-  const [isLastItem, setIsLastItem] = useState(true);
-  const [groupVariant, setGroupVariant] = useState("default");
+  const [localOpen, setLocalOpen] = useState(defaultOpen);
   const itemRef = useRef(null);
+  const [groupState, setGroupState] = useState({
+    borderColor: "gray_200",
+    isFirstItem: true,
+    isLastItem: true,
+    variant: "default",
+  });
   const reactId = useId();
   const safeId = reactId.replace(/:/g, "");
   const buttonId = `accordion-item-button-${safeId}`;
   const panelId = `accordion-item-panel-${safeId}`;
   const HeadingElement = headingElement;
+  const isOpen = localOpen;
 
   useEffect(() => {
-    setIsOpen(defaultOpen);
-  }, [defaultOpen]);
-
-  useEffect(() => {
-    const itemElement = itemRef.current;
-    const groupElement = itemRef.current?.closest("[data-accordion-group]");
-    if (!groupElement || !itemElement) return;
-
-    const syncGroupAttributes = () => {
-      const nextBorderColor =
-        groupElement.getAttribute("data-border-color") ?? "gray_200";
-      const nextVariant =
-        groupElement.getAttribute("data-variant") ?? "default";
-      const groupItems = Array.from(
-        groupElement.querySelectorAll("[data-accordion-item]"),
-      );
-      const itemIndex = groupItems.indexOf(itemElement);
-
-      setGroupBorderColor((previousValue) =>
-        previousValue === nextBorderColor ? previousValue : nextBorderColor,
-      );
-      setGroupVariant((previousValue) =>
-        previousValue === nextVariant ? previousValue : nextVariant,
-      );
-      setIsFirstItem((previousValue) =>
-        previousValue === itemIndex <= 0 ? previousValue : itemIndex <= 0,
-      );
-      setIsLastItem((previousValue) =>
-        previousValue ===
-        (itemIndex === -1 || itemIndex === groupItems.length - 1)
-          ? previousValue
-          : itemIndex === -1 || itemIndex === groupItems.length - 1,
-      );
-    };
-
-    syncGroupAttributes();
-
-    const observer = new MutationObserver(syncGroupAttributes);
-    observer.observe(groupElement, {
-      attributeFilter: ["data-border-color", "data-variant"],
-      attributes: true,
-      childList: true,
-      subtree: true,
+    const el = itemRef.current;
+    if (!el) return;
+    const group = el.closest("[data-accordion-group]");
+    if (!group) return;
+    const variant = group.getAttribute("data-variant") || "default";
+    const borderColor = group.getAttribute("data-border-color") || "gray_200";
+    const items = group.querySelectorAll("[data-accordion-item]");
+    const index = Array.from(items).indexOf(el);
+    setGroupState({
+      borderColor,
+      isFirstItem: index === 0,
+      isLastItem: index === items.length - 1,
+      variant,
     });
-
-    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    const groupElement = itemRef.current?.closest("[data-accordion-group]");
-    const allowsMultiple =
-      groupElement?.getAttribute("data-allow-multiple") === "true";
+    setLocalOpen(defaultOpen);
+  }, [defaultOpen]);
 
-    if (!groupElement || allowsMultiple) return;
-
-    const handleSiblingOpen = (event) => {
-      const openedId = event?.detail?.id;
-      if (openedId && openedId !== safeId) {
-        setIsOpen(false);
+  useEffect(() => {
+    if (!anchorId) return;
+    const checkHash = () => {
+      // Open the item if the anchor ID is in the URL.
+      if (window.location.hash === `#${anchorId}`) {
+        setLocalOpen(true);
+        // Scroll the item into view after the panel has expanded.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            itemRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+        });
       }
     };
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
+    return () => window.removeEventListener("hashchange", checkHash);
+  }, [anchorId]);
 
-    groupElement.addEventListener(ACCORDION_OPEN_EVENT, handleSiblingOpen);
-
-    if (defaultOpen) {
-      groupElement.dispatchEvent(
-        new CustomEvent(ACCORDION_OPEN_EVENT, { detail: { id: safeId } }),
-      );
-    }
-
-    return () => {
-      groupElement.removeEventListener(ACCORDION_OPEN_EVENT, handleSiblingOpen);
-    };
-  }, [defaultOpen, safeId]);
+  const {
+    borderColor: groupBorderColor,
+    isFirstItem,
+    isLastItem,
+    variant: groupVariant,
+  } = groupState;
 
   const handleToggle = () => {
-    setIsOpen((previousValue) => {
-      const nextValue = !previousValue;
-
-      if (nextValue) {
-        const groupElement = itemRef.current?.closest("[data-accordion-group]");
-        const allowsMultiple =
-          groupElement?.getAttribute("data-allow-multiple") === "true";
-
-        if (groupElement && !allowsMultiple) {
-          groupElement.dispatchEvent(
-            new CustomEvent(ACCORDION_OPEN_EVENT, { detail: { id: safeId } }),
-          );
-        }
-      }
-
-      return nextValue;
-    });
+    setLocalOpen((prev) => !prev);
   };
 
   const borderColorClassName = {
@@ -222,7 +182,12 @@ const AccordionItem = ({
   );
 
   return (
-    <div className={itemClassName} data-accordion-item ref={itemRef}>
+    <div
+      className={itemClassName}
+      data-accordion-item
+      id={anchorId || undefined}
+      ref={itemRef}
+    >
       <HeadingElement className="m-0">
         <button
           aria-controls={panelId}

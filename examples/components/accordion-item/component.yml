@@ -32,6 +32,9 @@ props:
       type: boolean
       examples:
         - false
+    anchorId:
+      title: Anchor ID
+      type: string
 slots:
   content:
     title: Content

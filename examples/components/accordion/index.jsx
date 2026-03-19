@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { cva } from "class-variance-authority";
 import { cn } from "drupal-canvas";
 
@@ -23,12 +24,13 @@ const accordionVariants = cva("w-full", {
 });
 
 const Accordion = ({
-  allowMultiple = true,
   borderColor = "gray_200",
   className,
   items,
   variant = "default",
 }) => {
+  const groupId = useId().replace(/:/g, "");
+
   const defaultVariantBorderClassName = {
     gray_200: "divide-y divide-gray-200",
     gray_300: "divide-y divide-gray-300",
@@ -45,7 +47,7 @@ const Accordion = ({
         className,
       )}
       data-accordion-group
-      data-allow-multiple={allowMultiple ? "true" : "false"}
+      data-accordion-group-id={groupId}
       data-border-color={borderColor}
       data-variant={variant}
     >

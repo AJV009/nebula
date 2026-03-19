@@ -4,11 +4,6 @@ status: true
 required: []
 props:
   properties:
-    allowMultiple:
-      title: Allow Multiple
-      type: boolean
-      examples:
-        - true
     borderColor:
       title: Border Color
       type: string

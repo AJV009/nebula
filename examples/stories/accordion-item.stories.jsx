@@ -11,6 +11,9 @@ export default {
     defaultOpen: {
       control: "boolean",
     },
+    anchorId: {
+      control: "text",
+    },
   },
 };
 
