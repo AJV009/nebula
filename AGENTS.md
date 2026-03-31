@@ -27,6 +27,7 @@ building Drupal Canvas Code Components.
 | `nebula-storybook-stories`    | Creating Storybook stories for individual components           |
 | `nebula-page-stories`         | Composing page-level stories with PageLayout                   |
 | `nebula-scrape-url`           | Capturing web pages for design reference                       |
+| `nebula-docs-explorer`        | Fetching Canvas and Drupal CMS documentation                   |
 | `implement-design`            | Translating Figma designs to code with 1:1 fidelity            |
 
 ## Validation
