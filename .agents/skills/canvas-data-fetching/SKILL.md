@@ -2,9 +2,12 @@
 name: canvas-data-fetching
 description:
   Fetch and render Drupal content in Canvas components with JSON:API and SWR
-  patterns. Use when building content lists, integrating with SWR, or querying
-  related entities. Covers JsonApiClient, DrupalJsonApiParams, relationship
-  handling, and filter patterns.
+  patterns. Also covers content write operations — creating pages, uploading
+  media, composing component trees, and managing content entities via JSON:API.
+  Use when building content lists, integrating with SWR, querying related
+  entities, or programmatically composing pages. Covers JsonApiClient,
+  DrupalJsonApiParams, relationship handling, filter patterns, CRUD operations,
+  page component structure, input format reference, and common pitfalls.
 ---
 
 # Data fetching
@@ -181,3 +184,204 @@ category, filter by author):
 
 This ensures filters stay in sync with the actual content in Drupal and new
 options appear automatically without code changes.
+
+## Content write operations
+
+The JSON:API supports creating, updating, and deleting content entities. These
+operations use standard JSON:API request formats with `fetch()`.
+
+**Prerequisites:** JSON:API must have write mode enabled. Drupal defaults to
+read-only. If write operations return HTTP 405, enable writes in Drupal admin or
+via drush (`drush config:set jsonapi.settings read_only false -y`).
+
+### Create an entity
+
+```js
+const response = await fetch(`${siteUrl}/${jsonapiPrefix}/node/page`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/vnd.api+json",
+    Accept: "application/vnd.api+json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({
+    data: {
+      type: "node--page",
+      attributes: {
+        title: "My Page",
+        status: true,
+        path: { alias: "/my-page" },
+        components: [
+          /* component tree — see Page Component Structure below */
+        ],
+      },
+    },
+  }),
+});
+```
+
+### Update an entity
+
+```js
+await fetch(`${siteUrl}/${jsonapiPrefix}/node/page/${uuid}`, {
+  method: "PATCH",
+  headers: {
+    "Content-Type": "application/vnd.api+json",
+    Accept: "application/vnd.api+json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({
+    data: {
+      type: "node--page",
+      id: uuid,
+      attributes: {
+        title: "Updated Title",
+      },
+    },
+  }),
+});
+```
+
+### Delete an entity
+
+```js
+await fetch(`${siteUrl}/${jsonapiPrefix}/node/page/${uuid}`, {
+  method: "DELETE",
+  headers: {
+    Accept: "application/vnd.api+json",
+    Authorization: `Bearer ${token}`,
+  },
+});
+```
+
+## Page component structure
+
+Pages in Canvas contain a `components` attribute — a flat array where nesting is
+encoded via `parent_uuid` and `slot` fields:
+
+```json
+{
+  "data": {
+    "type": "node--page",
+    "attributes": {
+      "title": "My Page",
+      "status": true,
+      "components": [
+        {
+          "uuid": "comp-001",
+          "component_id": "js.section",
+          "inputs": { "width": "Normal" },
+          "parent_uuid": null,
+          "slot": null
+        },
+        {
+          "uuid": "comp-002",
+          "component_id": "js.heading",
+          "inputs": { "text": "Welcome", "level": "h2" },
+          "parent_uuid": "comp-001",
+          "slot": "content"
+        }
+      ]
+    }
+  }
+}
+```
+
+### Component fields
+
+| Field          | Description                                                              |
+| -------------- | ------------------------------------------------------------------------ |
+| `uuid`         | Unique identifier for this component instance. Generate before creation. |
+| `component_id` | Component type (e.g., `js.heading`, `js.card`)                           |
+| `inputs`       | Object containing prop values matching component.yml                     |
+| `parent_uuid`  | UUID of parent component (`null` for root-level)                         |
+| `slot`         | Slot name in parent (`null` for root-level, e.g., `"content"`)           |
+
+Root-level components have `parent_uuid: null` and `slot: null`. Child
+components reference their parent's UUID and the slot name they occupy.
+
+## Input format reference
+
+**Always read `component.yml` before composing inputs.** The prop type in
+`component.yml` determines how the value must be formatted in the JSON:API
+request body.
+
+| component.yml type                                | JSON input format          | Example                                                            |
+| ------------------------------------------------- | -------------------------- | ------------------------------------------------------------------ |
+| `type: string` (plain)                            | Plain string               | `"heading": "Hello"`                                               |
+| `type: string` with `contentMediaType: text/html` | Formatted text object      | `"text": {"value": "<p>Hello</p>", "format": "canvas_html_block"}` |
+| `type: string` with `format: uri-reference`       | Plain string (path or URL) | `"link": "/about"`                                                 |
+| `type: object` with `$ref: .../image`             | target_id object (string)  | `"image": {"target_id": "31"}`                                     |
+| `type: string` with `enum`                        | Exact enum value string    | `"layout": "left"`                                                 |
+| `type: boolean`                                   | Boolean                    | `"visible": true`                                                  |
+| `type: integer` / `type: number`                  | Number                     | `"count": 3`                                                       |
+
+## Media upload
+
+Images must be uploaded to the media library before referencing them in
+components. The workflow is:
+
+1. Upload the file binary to create a file entity
+2. Create a media entity referencing the file
+3. Use the media entity's internal ID as `target_id` in component inputs
+
+The `target_id` must be the **media entity's internal ID** (visible in the media
+entity's `resourceVersion` or self link), not the underlying file entity's
+`drupal_internal__target_id`.
+
+### Referencing images in components
+
+```json
+{
+  "component_id": "js.card",
+  "inputs": {
+    "heading": "My Card",
+    "image": { "target_id": "31" },
+    "text": { "value": "<p>Content</p>", "format": "canvas_html_block" }
+  }
+}
+```
+
+## Common pitfalls
+
+1. **`target_id` must be a string.** Image references use `"target_id": "31"`
+   (string), not `"target_id": 31` (integer). Using an integer may cause type
+   errors or silent failures.
+
+2. **Link props are plain strings, not objects.** Link/URL props
+   (`format: uri-reference`) must be plain strings like `"/about"`. Do NOT use
+   Drupal's link field format `{"uri": "/about", "options": []}` — that is for
+   Drupal entity reference fields, not Canvas component inputs.
+
+   ```json
+   // Correct
+   "link": "/services"
+
+   // Wrong — will cause errors
+   "link": { "uri": "/services", "options": [] }
+   ```
+
+3. **Formatted text needs the wrapper object.** Any prop with
+   `contentMediaType: text/html` in component.yml must use the formatted text
+   object. A plain string will cause rendering failures or empty output.
+
+   ```json
+   // Correct
+   "text": { "value": "<p>Content here</p>", "format": "canvas_html_block" }
+
+   // Wrong — plain string for an HTML field
+   "text": "Content here"
+   ```
+
+4. **Media entity ID vs file entity ID.** When uploading images, there are two
+   internal IDs. The file entity has `drupal_internal__target_id` in its
+   relationships. The media entity has a separate internal ID. Always use the
+   **media** entity's ID in component inputs — using the file ID causes
+   "image.src NULL value found" errors.
+
+5. **JSON:API read-only mode.** If all write operations return HTTP 405, the
+   JSON:API is configured for read-only. Enable write operations in Drupal admin
+   or via drush.
+
+6. **Omit `langcode` on create.** When creating entities, omit the `langcode`
+   field — the API may reject it with permission errors.
