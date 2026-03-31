@@ -1,10 +1,11 @@
 ---
 name: nebula-frontend-design
 description:
-  Create distinctive, production-grade frontend interfaces with high design
-  quality. Use when building components from scratch or adapting designs to
-  avoid generic AI aesthetics. Guides aesthetic decisions (WHAT and WHY) while
-  canvas-styling-conventions handles implementation (HOW).
+  Guide bold, distinctive design decisions for Canvas components. Use when
+  building components from scratch, when designs look generic, or when the user
+  wants creative direction beyond mechanical implementation. Covers typography,
+  color, motion, composition, and anti-patterns. Guides aesthetic decisions
+  (WHAT and WHY) while canvas-styling-conventions handles implementation (HOW).
 ---
 
 <!-- Attribution: Adapted from the frontend-design skill by Anthropic. -->
@@ -23,16 +24,15 @@ direction beyond mechanical implementation.
 
 Before coding, understand the context and commit to a BOLD aesthetic direction:
 
-- **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick a direction and commit to it: brutally minimal, maximalist
-  chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like,
-  editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel,
-  industrial/utilitarian. Use these for inspiration but design one that is true
-  to the aesthetic direction.
-- **Constraints**: Technical requirements (Canvas component contract, Tailwind
-  tokens, responsive behavior).
-- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing
-  someone will remember?
+- **Purpose**: What problem does this interface solve and who uses it?
+- **Tone**: Commit to a direction — brutally minimal, maximalist chaos,
+  retro-futuristic, organic, luxury, playful, editorial, brutalist, art deco,
+  soft/pastel, industrial. Use for inspiration but design true to the chosen
+  aesthetic.
+- **Constraints**: Canvas component contract, Tailwind tokens, responsive
+  behavior.
+- **Differentiation**: What makes this UNFORGETTABLE — the one thing someone
+  will remember?
 
 Choose a clear conceptual direction and execute it with precision. Bold
 maximalism and refined minimalism both work — the key is intentionality, not
@@ -107,13 +107,11 @@ design intent.
 
 NEVER use generic AI-generated aesthetics:
 
-- Overused font families (Inter, Roboto, Arial, system fonts as primary)
-- Cliched color schemes (particularly purple gradients on white backgrounds)
-- Predictable layouts and component patterns
-- Cookie-cutter design that lacks context-specific character
-- Perfectly symmetric, grid-aligned everything
-- Standard border-radius on everything
-- The same card layout every time
+- Overused fonts (Inter, Roboto, Arial, system fonts as primary display type)
+- Cliched purple-gradient-on-white color schemes
+- Predictable, perfectly symmetric, grid-aligned-everything layouts
+- Cookie-cutter card patterns with uniform border-radius
+- Designs that lack context-specific character
 
 Interpret creatively and make unexpected choices that feel genuinely designed
 for the context. No design should be the same. Vary between light and dark
@@ -121,14 +119,9 @@ themes, different fonts, different aesthetics.
 
 ## Relationship to Other Skills
 
-- **This skill** = WHAT and WHY (aesthetic decisions, design direction)
-- **`canvas-styling-conventions`** = HOW (Tailwind tokens, CVA patterns, `cn()`)
-- **`implement-design`** = Figma-to-code translation (1:1 fidelity to an
-  existing design)
-
-This skill is for when you're making design decisions. If you're implementing an
-existing Figma design, use `implement-design` instead. If you need to know how
-to write the CSS/Tailwind, load `canvas-styling-conventions`.
+**This skill** = WHAT and WHY (aesthetic decisions).
+**`canvas-styling-conventions`** = HOW (Tailwind tokens, CVA, `cn()`).
+**`implement-design`** = Figma-to-code (1:1 fidelity to an existing design).
 
 Match implementation complexity to the aesthetic vision. Maximalist designs need
 elaborate code with extensive animations and effects. Minimalist or refined

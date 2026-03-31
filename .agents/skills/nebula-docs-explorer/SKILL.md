@@ -1,31 +1,23 @@
 ---
 name: nebula-docs-explorer
 description:
-  Search and fetch Canvas and Drupal CMS documentation pages. Takes a query
-  describing what you need to know (e.g., "code components", "page regions",
-  "known issues", "data fetching") and returns the full content of matching
-  documentation pages. Use whenever you need to understand how Canvas or Drupal
-  CMS works, verify platform behavior, check for limitations, or find
-  configuration options.
+  Fetch Canvas and Drupal CMS documentation on demand. Use when you need to
+  verify platform behavior, check for limitations, understand Canvas APIs, or
+  troubleshoot component issues — even if you think you know the answer, as docs
+  may have changed.
+compatibility: Requires internet access to fetch documentation pages.
 ---
 
 # Canvas & Drupal CMS Documentation Explorer
 
-Fetch and return official Canvas and Drupal CMS documentation relevant to a
-query. This skill searches a curated URL catalog, identifies the most relevant
-pages, fetches their full content, and returns it.
+Fetch official Canvas and Drupal CMS documentation relevant to a query. Search a
+curated URL catalog, identify the most relevant pages, fetch their full content,
+and return it.
 
 ## Arguments
 
-- `$1` — **Query** (required). A natural language description of what you need
-  to know. Examples:
-  - `"known issues and limitations"`
-  - `"code components props slots"`
-  - `"data fetching SWR JsonApiClient"`
-  - `"page regions configuration"`
-  - `"creating custom components"`
-  - `"packages FormattedText cn"`
-  - `"JSON:API write mode"`
+`$1` — **Query** (required). Natural language description of what you need to
+know, e.g. `"code components props slots"` or `"data fetching JsonApiClient"`.
 
 ## Execution
 
@@ -40,13 +32,12 @@ by:
 - Always include the Known Issues inline content (below) if the query relates to
   components, Tailwind, Canvas, or troubleshooting
 
-Be generous with matching — it's better to fetch an extra page than miss a
-relevant one.
+Be generous — better to fetch an extra page than miss a relevant one.
 
 ### Step 2: Fetch matched pages
 
 For each matched URL, use `WebFetch` to retrieve the page content. Fetch pages
-in parallel where possible for speed.
+in parallel where possible.
 
 Use this prompt for each fetch:
 
@@ -108,9 +99,8 @@ remaining pages.
 
 ## Critical Known Issues (Inline — Always Available)
 
-These are known issues that should be referenced WITHOUT needing to fetch the
-docs page. Return these inline whenever the query relates to components,
-Tailwind, Canvas, or troubleshooting:
+Return these inline whenever the query relates to components, Tailwind, Canvas,
+or troubleshooting — no fetch needed:
 
 1. **Never remove components via the Component Library UI** — triggers an error
    that can break the site. Use the Code component panel instead.

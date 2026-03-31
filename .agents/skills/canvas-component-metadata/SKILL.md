@@ -1,11 +1,9 @@
 ---
 name: canvas-component-metadata
 description:
-  Define valid component.yml metadata for Canvas components, including props,
-  slots, enums, and defensive prop handling patterns. Use when (1) Creating a
-  new component, (2) Adding or modifying props, (3) Troubleshooting "not a valid
-  choice" or prop type errors, (4) Mapping enums to CVA variants, (5) Guarding
-  against null/undefined props at runtime.
+  Define component.yml metadata and handle props defensively at runtime. Use
+  when creating components, adding props/slots, troubleshooting prop errors, or
+  guarding against null props.
 ---
 
 ## File structure
@@ -13,27 +11,30 @@ description:
 Every `component.yml` must include these top-level keys:
 
 ```yaml
-name: Component Name # Human-readable display name
-machineName: component-name # Machine name in kebab-case
-status: true # Whether the component is enabled
-required: [] # Array of required prop names
+name: Component Name
+machineName: component-name
+status: true
+required: []
 props:
   properties:
     # ... prop definitions
-slots: [] # Use [] only when there are no slots; otherwise use an object map
+slots: [] # [] when no slots; otherwise an object map
 ```
 
 ## Props
 
-### Requirements
+### Rules
 
-Every prop definition must include a `title` for the UI label. The `examples`
-array is required for required props and recommended for all others. Only the
-first example value is used by Drupal Canvas.
-
-If a prop is listed in `required`, do not add a fallback/default value for that
-prop in the React component signature. Required Canvas props should be provided
-by metadata/editor input rather than silent JSX defaults.
+- Every prop needs a `title`. The `examples` array is required for required
+  props, recommended otherwise. Only the first example value is used by Canvas.
+- **Prop IDs must be camelCase of their title.** `buttonText` for "Button Text",
+  `backgroundColor` for "Background Color".
+- **Never include `className` in component.yml.** It is a composition prop for
+  developers, not a Canvas editor control.
+- Only include Canvas-editable props. Implementation-only React props stay in
+  JSX only.
+- If a prop is in `required`, do NOT add a fallback default in the JSX component
+  signature. Required props must come from Canvas metadata/editor input.
 
 ```yaml
 props:
@@ -46,208 +47,26 @@ props:
 ```
 
 ```jsx
-// Correct: required prop has no fallback default
+// Correct: required prop has no fallback
 const Hero = ({ heading }) => <h1>{heading}</h1>;
 
-// Wrong: required prop fallback masks missing required data
+// Wrong: fallback masks missing required data
 const Hero = ({ heading = "Default heading" }) => <h1>{heading}</h1>;
 ```
 
-**Prop IDs must be camelCase versions of their titles.**
-
-The prop ID (the key under `properties`) must be the camelCase conversion of the
-`title` value.
-
-Only include user-facing, Canvas-editable props in `component.yml`.
-Implementation-only React props must stay in JSX and must not be added to
-metadata.
-
-**Never include `className` in `component.yml`.** Treat it as a composition prop
-for developers, not a Canvas editor control.
-
-```yaml
-# Correct
-props:
-  properties:
-    buttonText:           # camelCase of "Button Text"
-      title: Button Text
-      type: string
-    backgroundColor:      # camelCase of "Background Color"
-      title: Background Color
-      type: string
-    isVisible:            # camelCase of "Is Visible"
-      title: Is Visible
-      type: boolean
-
-# Wrong
-props:
-  properties:
-    btn_text:             # should be "buttonText" for title "Button Text"
-      title: Button Text
-    bgColor:              # should be "backgroundColor" for title "Background Color"
-      title: Background Color
-```
-
-### Prop types
-
-#### Text
-
-Basic text input. Stored as a string value.
-
-```yaml
-type: string
-examples:
-  - Hello, world!
-```
-
-#### Formatted text
-
-Rich text content with HTML formatting support, displayed in a block context.
-
-```yaml
-type: string
-contentMediaType: text/html
-x-formatting-context: block
-examples:
-  - <p>This is <strong>formatted</strong> text with HTML.</p>
-```
-
-#### Link
-
-URL or URI reference for links to internal or external resources.
-
-```yaml
-type: string
-format: uri-reference
-examples:
-  - /about/contact
-```
-
-**Note:** The format can be either `uri` (accepts only absolute URLs) or
-`uri-reference` (accepts both absolute and relative URLs).
-
-**IMPORTANT: Use proper path examples for URL props.** Do not use `#` as an
-example value for `uri-reference` props—it can cause validation failures during
-upload. Always use realistic path-like examples:
-
-```yaml
-# Correct
-examples:
-  - /resources
-  - /about/team
-  - https://example.com/page
-
-# Wrong
-examples:
-  - "#"
-  - ""
-```
-
-#### Image
-
-Reference to an image object with metadata like alt text, dimensions, and file
-URL. Only the file URL is required to exist, all other metadata is always
-optional.
-
-```yaml
-type: object
-$ref: json-schema-definitions://canvas.module/image
-examples:
-  - src: >-
-      https://images.unsplash.com/photo-1484959014842-cd1d967a39cf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80
-    alt: Woman playing the violin
-    width: 1770
-    height: 1180
-```
-
-#### Video
-
-Reference to a video object with metadata like dimensions and file URL. Only the
-file URL is required to exist, all other metadata is always optional.
-
-```yaml
-type: object
-$ref: json-schema-definitions://canvas.module/video
-examples:
-  - src: https://media.istockphoto.com/id/1340051874/video/aerial-top-down-view-of-a-container-cargo-ship.mp4?s=mp4-640x640-is&k=20&c=5qPpYI7TOJiOYzKq9V2myBvUno6Fq2XM3ITPGFE8Cd8=
-    poster: https://example.com/600x400.png
-```
-
-#### Boolean
-
-True or false value.
-
-```yaml
-type: boolean
-examples:
-  - false
-```
-
-#### Integer
-
-Whole number value without decimal places.
-
-```yaml
-type: integer
-examples:
-  - 42
-```
-
-#### Number
-
-Numeric value that can include decimal places.
-
-```yaml
-type: number
-examples:
-  - 3.14
-```
-
-#### List: text
-
-A predefined list of text options that the user can select from.
-
-```yaml
-type: string
-enum:
-  - option1
-  - option2
-  - option3
-meta:enum:
-  option1: Option 1
-  option2: Option 2
-  option3: Option 3
-examples:
-  - option1
-```
-
-#### List: integer
-
-A predefined list of integer options that the user can select from.
-
-```yaml
-type: integer
-enum:
-  - 1
-  - 2
-  - 3
-meta:enum:
-  1: Option 1
-  2: Option 2
-  3: Option 3
-examples:
-  - 1
-```
+For prop type definitions and YAML examples (text, formatted text, link, image,
+video, boolean, integer, number, list:text, list:integer), see
+[references/prop-types.md](references/prop-types.md).
 
 ## Enums
 
-Enum values must use lowercase, machine-friendly identifiers. Use `meta:enum` to
-provide human-readable display labels for the UI.
-
-**Note:** Enum values cannot contain dots.
+- Values must be **lowercase, machine-friendly identifiers** (e.g.
+  `left_aligned`).
+- **No dots in enum values.**
+- Use `meta:enum` for human-readable UI labels.
+- `examples` must use the enum value, not the display label.
 
 ```yaml
-# Correct
 enum:
   - left_aligned
   - center_aligned
@@ -256,199 +75,25 @@ meta:enum:
   center_aligned: Center aligned
 examples:
   - left_aligned
-
-# Wrong
-enum:
-  - Left aligned
-  - Center aligned
 ```
 
-The `examples` value must be the enum value, not the display label.
-
-### Enum values must match JSX component variants
-
-When using class-variance-authority (CVA) or similar libraries in the JSX
-component, the variant keys must exactly match the enum values defined in
-`component.yml`.
+### CVA variants must match enum values exactly
 
 ```jsx
-// component.yml defines: enum: [left_aligned, center_aligned]
-// CVA variants must match:
 const variants = cva("base-classes", {
   variants: {
     layout: {
-      left_aligned: "text-left", // matches enum value
-      center_aligned: "text-center", // matches enum value
+      left_aligned: "text-left",
+      center_aligned: "text-center",
     },
   },
 });
 ```
 
-## Slots
-
-Slots allow other components to be embedded within a component. In React, each
-slot is received as a named prop that matches the slot key.
-
-This section is the slot schema source of truth. Other skills should reference
-these rules instead of redefining slot schema details.
-
-Before creating slots, confirm with the user unless the use case is clearly
-compositional (for example, rich nested content, or repeatable embedded
-components). For simple text-like values, prefer a prop.
-
-**Important:** Do not map Canvas slots to the `children` prop by default. If the
-slot key is `content`, consume it as `content` in JSX.
-
-Using a slot key named `children` is technically possible, but it is not
-recommended because slot naming often flows into user-facing Canvas labels.
-Prefer explicit slot keys such as `content`, `media`, or `actions`.
-
-`slots` must be either:
-
-1. An object map keyed by slot name (`content`, `sidebar`, etc.)
-2. `[]` when the component has no slots
-
-```yaml
-slots:
-  content:
-    title: Content
-  buttons:
-    title: Buttons
-```
-
-In the JSX component, slots are destructured as named props and rendered
-directly:
+**Always provide `defaultVariants`** so the component doesn't break when an enum
+prop is undefined:
 
 ```jsx
-const Section = ({ width, content }) => {
-  return <div className={sectionVariants({ width })}>{content}</div>;
-};
-```
-
-```jsx
-// Wrong when the slot key is `content`: this does not consume the named slot.
-const Section = ({ children }) => {
-  return <div>{children}</div>;
-};
-```
-
-Use `slots: []` only when the component has no slots:
-
-```yaml
-slots: []
-```
-
-Do not use arrays of slot objects:
-
-```yaml
-# Wrong
-slots:
-  - name: content
-    title: Content
-```
-
-### Slot minimum sizing
-
-Empty slots in the Canvas Editor are invisible without minimum dimensions,
-making it impossible to drag content into them. Add minimum sizing to slot
-containers:
-
-```jsx
-// Wrong — empty slot has zero height, can't drop content in editor
-const Section = ({ content }) => <div>{content}</div>;
-
-// Correct — minimum size keeps empty slots interactive
-const Section = ({ content }) => (
-  <div className="min-h-8 min-w-32">{content}</div>
-);
-```
-
-## Defensive prop handling
-
-Canvas components receive props from the CMS. Optional props can be `null`,
-`undefined`, or partially populated. Guard against these at runtime to prevent
-component crashes.
-
-### Null guards for each prop type
-
-**Image props:**
-
-```jsx
-// Wrong — crashes when image is null/undefined
-<img src={image.src} alt={image.alt} />;
-
-// Correct — guard with optional chaining
-{
-  image?.src && <img src={image.src} alt={image.alt || ""} />;
-}
-```
-
-**Formatted text props:**
-
-```jsx
-// Wrong — FormattedText with null value throws error
-<FormattedText text={body} />;
-
-// Correct — guard before rendering
-{
-  body && <FormattedText text={body} />;
-}
-```
-
-**Video props:**
-
-```jsx
-// Wrong — crashes if video is undefined
-<video src={video.src} poster={video.poster} />;
-
-// Correct — guard before rendering
-{
-  video?.src && <video src={video.src} poster={video.poster} controls />;
-}
-```
-
-**Link props:**
-
-```jsx
-// Wrong — crashes if link is null
-<a href={link}>Click here</a>;
-
-// Correct — guard and handle both string and object forms
-{
-  link && <a href={typeof link === "string" ? link : link.uri}>{linkText}</a>;
-}
-```
-
-### String-or-object dual format
-
-Some props may arrive as either a plain string or an object depending on how
-content was authored. Handle both forms defensively:
-
-```jsx
-// Link can be "/about" (string) or { uri: "/about", title: "About" } (object)
-const href = typeof link === "string" ? link : link?.uri;
-
-// Image can be a URL string or { src: "...", alt: "..." } object
-const imgSrc = typeof image === "string" ? image : image?.src;
-```
-
-### CVA defaultVariants
-
-When using CVA for enum-driven styling, always provide `defaultVariants` so the
-component doesn't break when an enum prop is undefined:
-
-```jsx
-// Wrong — no fallback if color is undefined
-const styles = cva("base-class", {
-  variants: {
-    color: {
-      primary: "bg-primary-600 text-white",
-      secondary: "bg-gray-100 text-gray-900",
-    },
-  },
-});
-
-// Correct — defaultVariants provides a fallback
 const styles = cva("base-class", {
   variants: {
     color: {
@@ -462,8 +107,53 @@ const styles = cva("base-class", {
 });
 ```
 
-### General rule
+## Slots
 
-Any prop not listed in `required` in component.yml can be null or undefined at
-runtime. Use `?.` and `&&` guards for all optional props before accessing nested
-properties or rendering components that expect non-null values.
+This section is the slot schema source of truth. Other skills should reference
+these rules.
+
+- `slots` must be either an **object map** keyed by slot name, or **`[]`** when
+  the component has no slots.
+- Do not use arrays of slot objects.
+- Do not map slots to `children`. If the slot key is `content`, consume it as
+  `content` in JSX.
+- Prefer explicit slot keys (`content`, `media`, `actions`) over `children`.
+- Confirm slot usage with the user unless the use case is clearly compositional.
+
+```yaml
+slots:
+  content:
+    title: Content
+  buttons:
+    title: Buttons
+```
+
+```jsx
+const Section = ({ width, content }) => (
+  <div className={sectionVariants({ width })}>{content}</div>
+);
+```
+
+### Slot minimum sizing
+
+Empty slots in Canvas Editor are invisible without minimum dimensions, making
+drag-and-drop impossible. Always add minimum sizing:
+
+```jsx
+// Wrong -- zero height, can't drop content
+const Section = ({ content }) => <div>{content}</div>;
+
+// Correct -- minimum size keeps empty slots interactive
+const Section = ({ content }) => (
+  <div className="min-h-8 min-w-32">{content}</div>
+);
+```
+
+## Defensive prop handling
+
+Any prop not in `required` can be null/undefined at runtime. Use `?.` and `&&`
+guards for all optional props before accessing nested properties or rendering.
+
+For null guard patterns per prop type and string-or-object dual format handling,
+see [references/defensive-patterns.md](references/defensive-patterns.md). Load
+this reference when implementing optional props in index.jsx.

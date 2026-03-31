@@ -1,110 +1,45 @@
 ---
 name: nebula-storybook-stories
 description:
-  Create Storybook stories for Canvas components. Use when (1) Creating a new
-  component that needs a story, (2) Adding or modifying component stories, (3)
-  Verifying story files exist, (4) Organizing stories for larger projects.
-  Covers CSF3 format, argTypes, decorators, atomic design hierarchy, asset
-  management, and test stories.
+  Create Storybook stories for Canvas components. Use when creating a new
+  component, adding variants, or organizing stories for larger projects. Covers
+  CSF3 format, argTypes, decorators, atomic design hierarchy, and story assets.
 ---
 
 **CRITICAL: Every component MUST have an individual story file.**
 
-Each component in `src/components/` requires a corresponding story file in
-`src/stories/`. The story file:
+Each component in `src/components/` requires a corresponding story in
+`src/stories/`. Story files are named `<component-name>.stories.jsx`
+(kebab-case), importing from `@/components/<component-name>`.
 
-- Must be named `<component-name>.stories.jsx` (kebab-case with hyphens)
-- Must import the component from `@/components/<component-name>`
-- Must showcase the component's props and variants
-
-**Example structure:**
-
-```
-src/components/my-card/
-├── index.jsx
-└── component.yml
-
-src/stories/my-card.stories.jsx  # Required story file for my-card component
-```
-
-## Name mapping
-
-Use this canonical mapping for component/story naming:
-
-- `component.yml machineName`: `my-card`
-- Component folder: `src/components/my-card/`
-- Component import: `@/components/my-card`
-- Story file: `src/stories/my-card.stories.jsx`
-
-**Story file requirements:**
-
-- Use Storybook CSF3 format (object-based stories).
-- Include `argTypes` for props with predefined options (like enums).
-- Create multiple story exports to showcase different variants.
-- Use decorators when components need specific backgrounds (e.g., dark
-  backgrounds for light-colored components).
-
-After creating components, verify story files exist:
-
-```bash
-# List all story files
-ls src/stories/*.stories.jsx
-
-# Verify a specific component has its story
-ls src/stories/<component-name>.stories.jsx
-```
-
-## Organizing with Atomic Design (recommended for larger projects)
-
-For projects with many components (15+) or when building full page compositions,
-organize stories using an Atomic Design hierarchy. This groups components by
-structural complexity and makes the Storybook sidebar navigable.
-
-**This is optional.** For small projects with a few components, the flat
-`src/stories/<name>.stories.jsx` structure works fine. Adopt atomic design when
-the flat list becomes hard to navigate.
-
-### Folder structure
-
-```
-src/stories/
-├── atoms/            # smallest building blocks
-│   ├── button.stories.jsx
-│   ├── heading.stories.jsx
-│   ├── text.stories.jsx
-│   ├── image.stories.jsx
-│   └── spacer.stories.jsx
-├── molecules/        # combinations of atoms
-│   ├── card.stories.jsx
-│   ├── blockquote.stories.jsx
-│   └── breadcrumb.stories.jsx
-├── organisms/        # complex UI sections
-│   ├── hero.stories.jsx
-│   ├── card-container.stories.jsx
-│   ├── header.stories.jsx
-│   └── footer.stories.jsx
-├── example-pages/    # full page compositions (see nebula-page-stories)
-│   └── home.stories.jsx
-└── tests/            # interactive test stories
-    └── slot-testing.stories.jsx
-```
-
-### Title convention
-
-Use the level name as a title prefix to group stories in the sidebar:
+**Story pattern:**
 
 ```jsx
-// Atoms
-export default { title: "Atoms/Button", component: Button };
+import Card from "@/components/card";
 
-// Molecules
-export default { title: "Molecules/Card", component: Card };
+export default {
+  title: "Molecules/Card",
+  component: Card,
+  argTypes: {
+    variant: { options: ["default", "featured"], control: "select" },
+  },
+};
 
-// Organisms
-export default { title: "Organisms/Hero", component: Hero };
+export const Default = { args: { heading: "Card Title" } };
+export const Featured = { args: { heading: "Featured", variant: "featured" } };
 ```
 
-### Classification guide
+- Include `argTypes` for props with predefined options (enums).
+- Create multiple exports to showcase variants.
+- Use decorators when components need specific backgrounds (e.g., dark bg for
+  light-colored components).
+
+## Atomic design organization
+
+For projects with many components (15+), organize stories into atomic design
+subfolders. For small projects, the flat `src/stories/` structure works fine.
+
+### Classification
 
 | Level    | Description                            | Examples                                          |
 | -------- | -------------------------------------- | ------------------------------------------------- |
@@ -120,46 +55,45 @@ export default { title: "Organisms/Hero", component: Hero };
 into a page section, it's an organism. If it stands alone with no child
 component imports, it's an atom.
 
+### Folder structure and title convention
+
+Place stories in `src/stories/<level>/` and prefix titles with the level name:
+
+```
+src/stories/
+├── atoms/            # title: "Atoms/Button"
+├── molecules/        # title: "Molecules/Card"
+├── organisms/        # title: "Organisms/Hero"
+├── example-pages/    # see nebula-page-stories
+└── tests/            # title: "Tests/Slot Testing"
+```
+
 ## Story assets
 
-Store shared story assets in `src/stories/assets/` with a barrel export for
-clean imports:
-
-```
-src/stories/assets/
-├── hero-bg.jpg
-├── logo.svg
-├── team-photo.jpg
-└── index.js
-```
+Store shared assets in `src/stories/assets/` with a barrel export:
 
 ```js
 // src/stories/assets/index.js
 export { default as heroBg } from "./hero-bg.jpg";
 export { default as logo } from "./logo.svg";
-export { default as teamPhoto } from "./team-photo.jpg";
 ```
-
-Then import in stories:
 
 ```jsx
 import { heroBg, logo } from "../assets";
 ```
 
-For placeholder images when real assets aren't available, use
-`https://placehold.co/<width>x<height>` URLs directly in story args.
+For placeholders, use `https://placehold.co/<width>x<height>` URLs directly in
+story args.
 
 ## Test stories
 
-Stories that exist for testing specific behaviors (not component documentation)
-go in the `Tests/` category with auto-docs disabled:
+Stories for testing behaviors (not component documentation) go in `Tests/` with
+auto-docs disabled:
 
 ```jsx
 export default {
   title: "Tests/Slot Testing",
-  parameters: {
-    docs: { disable: true },
-  },
+  parameters: { docs: { disable: true } },
 };
 
 export const EmptySlots = {
@@ -171,6 +105,5 @@ export const NestedSlots = {
 };
 ```
 
-Use test stories for: slot composition testing, responsive behavior
-verification, edge cases (very long text, missing props), and interactive state
-testing.
+Use test stories for: slot composition, responsive behavior, edge cases (long
+text, missing props), and interactive state testing.
