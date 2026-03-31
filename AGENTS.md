@@ -32,6 +32,7 @@ building Drupal Canvas Code Components.
 | `nebula-design-extraction`    | Extract design tokens, screenshots, and content from a URL     |
 | `nebula-figma-extraction`     | Extract design tokens and content from a Figma file            |
 | `nebula-visual-qa`            | Visual QA comparison loop (Storybook vs design reference)      |
+| `nebula-clone-page`           | Clone a page from URL or Figma into Canvas components          |
 | `implement-design`            | Translating Figma designs to code with 1:1 fidelity            |
 
 ## Validation
