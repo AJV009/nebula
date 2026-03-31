@@ -25,6 +25,39 @@ npx @drupal-canvas/create@latest
   installed from
   [`drupal-canvas/skills`](https://github.com/drupal-canvas/skills).
 
+See `AGENTS.md` for a full skill index with descriptions of when to use each
+one.
+
+### Page cloning workflow
+
+The `nebula-clone-page` skill orchestrates cloning a web page or Figma design
+into Canvas components. It coordinates extraction, component building, visual
+QA, and page story composition via sub-agents:
+
+- **`nebula-design-extraction`** — extract design tokens, screenshots, and
+  verbatim content from a live site URL
+- **`nebula-figma-extraction`** — extract the same from a Figma file using the
+  REST API
+- **`nebula-visual-qa`** — side-by-side QA comparing Storybook renders against
+  design references with severity classification and fix loops
+- **`nebula-frontend-design`** — guide distinctive design decisions (adapted
+  from
+  [Anthropic's frontend-design skill](https://github.com/anthropics/skills),
+  Apache 2.0)
+- **`nebula-docs-explorer`** — fetch Canvas and Drupal CMS documentation on
+  demand
+
+### Browser automation
+
+Two browser automation tools are included:
+
+- **[`@playwright/cli`](https://github.com/microsoft/playwright-cli)** —
+  interactive shell-based browser automation for multi-step workflows (QA,
+  extraction, form filling). Token-efficient for AI agents. Run
+  `playwright-cli --help` for commands.
+- **`scripts/scrape-page.js`** — single-command page capture with CloudFlare
+  bypass for quick reference screenshots.
+
 ### Setup
 
 No setup is required for the following coding agents; they read directly from
@@ -83,6 +116,8 @@ is resolved, you'll be able to use the `npx skills check` and
 - [Prettier](https://prettier.io/) with plugins configured
   - [`prettier-plugin-tailwindcss`](https://www.npmjs.com/package/prettier-plugin-tailwindcss)
   - [`@ianvs/prettier-plugin-sort-imports`](https://www.npmjs.com/package/@ianvs/prettier-plugin-sort-imports)
+- [`@playwright/cli`](https://github.com/microsoft/playwright-cli) for
+  token-efficient browser automation in AI agent workflows
 - Pre-commit hook with [Husky](https://typicode.github.io/husky) for linting and
   formatting staged files using
   [`lint-staged`](https://www.npmjs.com/package/lint-staged)
