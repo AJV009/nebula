@@ -2,9 +2,10 @@
 name: canvas-component-metadata
 description:
   Define valid component.yml metadata for Canvas components, including props,
-  slots, and enums. Use when (1) Creating a new component, (2) Adding or
-  modifying props, (3) Troubleshooting "not a valid choice" or prop type errors,
-  (4) Mapping enums to CVA variants.
+  slots, enums, and defensive prop handling patterns. Use when (1) Creating a
+  new component, (2) Adding or modifying props, (3) Troubleshooting "not a valid
+  choice" or prop type errors, (4) Mapping enums to CVA variants, (5) Guarding
+  against null/undefined props at runtime.
 ---
 
 ## File structure
@@ -345,3 +346,124 @@ slots:
   - name: content
     title: Content
 ```
+
+### Slot minimum sizing
+
+Empty slots in the Canvas Editor are invisible without minimum dimensions,
+making it impossible to drag content into them. Add minimum sizing to slot
+containers:
+
+```jsx
+// Wrong — empty slot has zero height, can't drop content in editor
+const Section = ({ content }) => <div>{content}</div>;
+
+// Correct — minimum size keeps empty slots interactive
+const Section = ({ content }) => (
+  <div className="min-h-8 min-w-32">{content}</div>
+);
+```
+
+## Defensive prop handling
+
+Canvas components receive props from the CMS. Optional props can be `null`,
+`undefined`, or partially populated. Guard against these at runtime to prevent
+component crashes.
+
+### Null guards for each prop type
+
+**Image props:**
+
+```jsx
+// Wrong — crashes when image is null/undefined
+<img src={image.src} alt={image.alt} />;
+
+// Correct — guard with optional chaining
+{
+  image?.src && <img src={image.src} alt={image.alt || ""} />;
+}
+```
+
+**Formatted text props:**
+
+```jsx
+// Wrong — FormattedText with null value throws error
+<FormattedText text={body} />;
+
+// Correct — guard before rendering
+{
+  body && <FormattedText text={body} />;
+}
+```
+
+**Video props:**
+
+```jsx
+// Wrong — crashes if video is undefined
+<video src={video.src} poster={video.poster} />;
+
+// Correct — guard before rendering
+{
+  video?.src && <video src={video.src} poster={video.poster} controls />;
+}
+```
+
+**Link props:**
+
+```jsx
+// Wrong — crashes if link is null
+<a href={link}>Click here</a>;
+
+// Correct — guard and handle both string and object forms
+{
+  link && <a href={typeof link === "string" ? link : link.uri}>{linkText}</a>;
+}
+```
+
+### String-or-object dual format
+
+Some props may arrive as either a plain string or an object depending on how
+content was authored. Handle both forms defensively:
+
+```jsx
+// Link can be "/about" (string) or { uri: "/about", title: "About" } (object)
+const href = typeof link === "string" ? link : link?.uri;
+
+// Image can be a URL string or { src: "...", alt: "..." } object
+const imgSrc = typeof image === "string" ? image : image?.src;
+```
+
+### CVA defaultVariants
+
+When using CVA for enum-driven styling, always provide `defaultVariants` so the
+component doesn't break when an enum prop is undefined:
+
+```jsx
+// Wrong — no fallback if color is undefined
+const styles = cva("base-class", {
+  variants: {
+    color: {
+      primary: "bg-primary-600 text-white",
+      secondary: "bg-gray-100 text-gray-900",
+    },
+  },
+});
+
+// Correct — defaultVariants provides a fallback
+const styles = cva("base-class", {
+  variants: {
+    color: {
+      primary: "bg-primary-600 text-white",
+      secondary: "bg-gray-100 text-gray-900",
+    },
+  },
+  defaultVariants: {
+    color: "primary",
+  },
+});
+```
+
+### General rule
+
+Any prop not listed in `required` in component.yml can be null or undefined at
+runtime. Use `?.` and `&&` guards for all optional props before accessing nested
+properties or rendering components that expect non-null values.
