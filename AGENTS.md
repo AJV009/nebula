@@ -30,6 +30,8 @@ building Drupal Canvas Code Components.
 | `nebula-docs-explorer`        | Fetching Canvas and Drupal CMS documentation                   |
 | `nebula-frontend-design`      | Bold design direction for building distinctive components      |
 | `nebula-design-extraction`    | Extract design tokens, screenshots, and content from a URL     |
+| `nebula-figma-extraction`     | Extract design tokens and content from a Figma file            |
+| `nebula-visual-qa`            | Visual QA comparison loop (Storybook vs design reference)      |
 | `implement-design`            | Translating Figma designs to code with 1:1 fidelity            |
 
 ## Validation
