@@ -3,9 +3,7 @@ name: nebula-frontend-design
 description:
   Guide bold, distinctive design decisions for Canvas components. Use when
   building components from scratch, when designs look generic, or when the user
-  wants creative direction beyond mechanical implementation. Covers typography,
-  color, motion, composition, and anti-patterns. Guides aesthetic decisions
-  (WHAT and WHY) while canvas-styling-conventions handles implementation (HOW).
+  wants creative direction beyond mechanical implementation.
 ---
 
 <!-- Attribution: Adapted from the frontend-design skill by Anthropic. -->

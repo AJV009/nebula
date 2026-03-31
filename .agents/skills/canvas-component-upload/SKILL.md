@@ -2,9 +2,8 @@
 name: canvas-component-upload
 description:
   Upload Canvas components with pre-upload validation and post-upload
-  verification. Use when components are ready to deploy. Covers preflight checks
-  (lint, validate, SSR test), Storybook visual verification, upload execution,
-  dependency-order failure recovery, and Canvas Code Editor verification.
+  verification. Use when components are ready to deploy, when upload fails with
+  dependency errors, or when verifying components are live in Canvas.
 compatibility:
   Requires .env in project root with CANVAS_SITE_URL, CANVAS_CLIENT_ID,
   CANVAS_CLIENT_SECRET.
