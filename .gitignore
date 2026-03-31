@@ -18,6 +18,10 @@ storybook-static
 # Scraped content (from scripts/scrape-page.js)
 scraped/
 
+# Playwright CLI output and config
+.playwright-cli/
+.playwright/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
